@@ -1,8 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"strings"
+	"image"
+	"image/color"
+
+	"golang.org/x/tour/pic"
 )
 
 // #1
@@ -216,17 +218,65 @@ type T struct {
 // 	return z, nil
 // }
 
-type MyReader struct{}
+// const (
+// 	scKey    = 13
+// 	alphabet = "abcdefghijklmnopqrstuvwxyz"
+// 	table    = alphabet + alphabet
+// )
 
-func Read([]byte) (int, error) {
-	b := make([]byte, 8)
-	for {
-		r := strings.NewReader("A")
-		n, err := r.Read(b)
+// type rot13Reader struct {
+// 	r io.Reader
+// }
 
-		fmt.Printf("n = %v err = %v b = %v\n", n, err, b)
-		fmt.Printf("b[:n] = %q\n", b[:n])
-	}
+// func (r rot13Reader) Read(p []byte) (int, error) {
+// 	n, err := r.r.Read(p)
+// 	if err != nil {
+// 		return n, err
+// 	}
+// 	for i := range p {
+// 		p[i] = r.rotate(p[i], scKey)
+// 	}
+// 	return n, err
+// }
+
+// func (r *rot13Reader) rotate(b byte, key int) byte {
+// 	ch := rune(b)
+// 	if !unicode.IsLetter(ch) {
+// 		return b
+// 	}
+
+// 	key = key % len(alphabet)
+
+// 	isUpper := false
+// 	if unicode.IsUpper(ch) {
+// 		isUpper = true
+// 		ch = unicode.ToLower(ch)
+// 	}
+
+// 	idx := byte(ch) - 'a' + byte(key)
+// 	rotatedCh := rune(table[idx])
+// 	if isUpper {
+// 		rotatedCh = unicode.ToUpper(rotatedCh)
+// 	}
+// 	return byte(rotatedCh)
+// }
+
+type Image struct {
+	w int
+	h int
+}
+
+func (i Image) Bounds() image.Rectangle {
+	return image.Rect(0, 0, i.w, i.h)
+}
+
+func (i Image) ColorModel() color.Model {
+	return color.RGBAModel
+}
+
+func (i Image) At(x, y int) color.Color {
+	v := uint8((x + y) / 2)
+	return color.RGBA{v, v, 255, 255}
 }
 
 func main() {
@@ -385,5 +435,16 @@ func main() {
 	// 	}
 	// }
 
-	reader.Validate(MyReader{})
+	// reader.Validate(MyReader{})
+
+	// s := strings.NewReader(("Lbh penpxrq gur pbqr!"))
+	// r := rot13Reader{s}
+	// io.Copy(os.Stdout, &r)
+
+	// m := image.NewNRGBA(image.Rect(0, 0, 100, 100))
+	// fmt.Println(m.Bounds())
+	// fmt.Println(m.At(0, 0).RGBA())
+
+	m := Image{100, 200}
+	pic.ShowImage(m)
 }
